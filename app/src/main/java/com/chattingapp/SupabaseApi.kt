@@ -6,7 +6,7 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
-import org.json.JSONObject
+import org.json.JSONObject\nimport org.json.JSONTokener
 import java.io.IOException
 
 data class ChatSession(val accessToken: String, val refreshToken: String, val userId: String, val username: String)
@@ -133,7 +133,7 @@ class SupabaseApi(context: Context) {
                 throw IOException(detail.ifBlank { "Supabase request failed (${response.code})." })
             }
             if (raw.isBlank()) return JSONObject()
-            return if (raw.startsWith("[")) JSONArray(raw) else JSONObject(raw)
+            return JSONTokener(raw).nextValue()
         }
     }
 
