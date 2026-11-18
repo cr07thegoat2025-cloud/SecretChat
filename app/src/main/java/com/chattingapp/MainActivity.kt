@@ -45,7 +45,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 private fun ChattingApp(api: SupabaseApi) {
     var email by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var busy by remember { mutableStateOf(false) }
     var signedIn by remember { mutableStateOf(false) }
@@ -86,8 +85,6 @@ private fun ChattingApp(api: SupabaseApi) {
                 Spacer(Modifier.height(8.dp))
                 OutlinedTextField(value = email, onValueChange = { email = it }, modifier = Modifier.fillMaxWidth(),
                     label = { Text("Email address") }, singleLine = true)
-                OutlinedTextField(value = username, onValueChange = { username = it.lowercase() }, modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Choose a username") }, singleLine = true)
                 OutlinedTextField(value = password, onValueChange = { password = it }, modifier = Modifier.fillMaxWidth(),
                     label = { Text("Password (8+ characters)") }, visualTransformation = PasswordVisualTransformation(), singleLine = true)
                 if (error.isNotBlank()) Text(error, color = Color(0xFFFF7777), fontSize = 13.sp)
@@ -95,17 +92,17 @@ private fun ChattingApp(api: SupabaseApi) {
                     scope.launch {
                         busy = true; error = ""
                         try {
-                            withContext(Dispatchers.IO) { api.createAccount(email, username, password) }
+                            withContext(Dispatchers.IO) { api.createAccount(email, password) }
                             signedIn = true; password = ""; email = ""; loadChats()
                         } catch (e: Exception) { error = e.message ?: "Could not create your account." }
                         finally { busy = false }
                     }
-                }, enabled = !busy && email.contains("@") && username.length >= 3 && password.length >= 8,
+                }, enabled = !busy && email.contains("@") && password.length >= 8,
                     modifier = Modifier.fillMaxWidth().height(54.dp), shape = RoundedCornerShape(15.dp)) {
                     if (busy) CircularProgressIndicator(Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
                     else Text("Create account", fontWeight = FontWeight.Bold)
                 }
-                Text("No email verification. Your email is used to create your account.", color = Soft, fontSize = 12.sp)
+                Text("No email verification. Just your email and password.", color = Soft, fontSize = 12.sp)
             }
         }
     } else if (selected != null) {
