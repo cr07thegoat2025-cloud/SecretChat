@@ -32,16 +32,16 @@ class SupabaseApi(context: Context) {
     fun hasSession() = !accessToken.isNullOrBlank() && !userId.isNullOrBlank()
 
     @Synchronized
-    fun authenticate(usernameInput: String, password: String, create: Boolean): ChatSession {
+    fun createAccount(emailInput: String, usernameInput: String, password: String): ChatSession {
         requireConfig()
+        val email = emailInput.trim().lowercase()
         val name = usernameInput.trim().lowercase()
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) throw IOException("Enter a valid email address.")
         if (!name.matches(Regex("^[a-z0-9_]{3,20}$"))) throw IOException("Username must be 3–20 letters, numbers or underscores.")
         if (password.length < 8) throw IOException("Password must be at least 8 characters.")
-        val email = "$name@chattingapp.invalid"
         val body = JSONObject().put("email", email).put("password", password)
-        if (create) body.put("data", JSONObject().put("username", name).put("display_name", name))
-        val path = if (create) "/auth/v1/signup" else "/auth/v1/token?grant_type=password"
-        val result = request(path, body, authenticated = false)
+            .put("data", JSONObject().put("username", name).put("display_name", name))
+        val result = request("/auth/v1/signup", body, authenticated = false)
         val session = sessionFrom(result, name)
         saveSession(session)
         return session
@@ -106,7 +106,7 @@ class SupabaseApi(context: Context) {
         val refresh = json.optString("refresh_token")
         val user = json.optJSONObject("user")
         val id = user?.optString("id").orEmpty()
-        if (access.isBlank() || id.isBlank()) throw IOException("Supabase did not return a session. In Supabase, disable Email confirmations for the Email provider so username-only accounts can sign in.")
+        if (access.isBlank() || id.isBlank()) throw IOException("Account created but no session was returned. Disable email confirmations in Supabase Authentication settings.")
         val actualName = user?.optJSONObject("user_metadata")?.optString("username").orEmpty().ifBlank { name }
         return ChatSession(access, refresh, id, actualName)
     }
