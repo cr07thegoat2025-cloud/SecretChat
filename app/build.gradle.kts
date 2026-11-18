@@ -14,6 +14,7 @@ android {
   versionName = "0.1.0"
   buildConfigField("String", "SUPABASE_URL", "\"" + (System.getenv("SUPABASE_URL")?.takeIf { it.isNotBlank() } ?: "https://sgzbbbrhoskipnvclskl.supabase.co") + "\"")
   buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"" + (System.getenv("SUPABASE_PUBLISHABLE_KEY")?.takeIf { it.isNotBlank() } ?: "sb_publishable_Mzlu_uSXfnGzaWYI2dp1og_ha7RJV1W") + "\"")
+  buildConfigField("String", "SUPABASE_ANON_KEY", "\"" + (System.getenv("SUPABASE_ANON_KEY")?.takeIf { it.isNotBlank() } ?: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNnemJiYnJob3NraXBudmNsc2tsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ1NTU5OTQsImV4cCI6MjExMDEzMTk5NH0.FWcOFkC8HSEegr4DoY_5fxmpQDuAnPhil3pUnxLywJs") + "\"")
  }
  buildFeatures { compose = true; buildConfig = true }
  compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
