@@ -19,6 +19,8 @@ class SupabaseApi(context: Context) {
     private val prefs = context.getSharedPreferences("chattingapp_session", Context.MODE_PRIVATE)
     private val url = BuildConfig.SUPABASE_URL.trimEnd('/')
     private val key = BuildConfig.SUPABASE_PUBLISHABLE_KEY
+    // Publishable keys are API keys, not JWTs; Authorization needs the anon JWT.
+    private val anonJwt = BuildConfig.SUPABASE_ANON_KEY
     private val jsonType = "application/json".toMediaType()
     private var accessToken: String? = prefs.getString("access_token", null)
     private var refreshToken: String? = prefs.getString("refresh_token", null)
@@ -125,7 +127,7 @@ class SupabaseApi(context: Context) {
                         extraHeaders: Map<String, String> = emptyMap()): Any {
         requireConfig()
         val builder = Request.Builder().url(url + path).header("apikey", key)
-            .header("Authorization", "Bearer " + if (authenticated) (accessToken ?: key) else key)
+            .header("Authorization", "Bearer " + if (authenticated) (accessToken ?: anonJwt) else anonJwt)
         extraHeaders.forEach { (k,v) -> builder.header(k,v) }
         val request = when (method) {
             "GET" -> builder.get().build()
@@ -144,6 +146,6 @@ class SupabaseApi(context: Context) {
     }
 
     private fun requireConfig() {
-        if (url.isBlank() || key.isBlank()) throw IOException("Supabase configuration is missing.")
+        if (url.isBlank() || key.isBlank() || anonJwt.isBlank()) throw IOException("Backend configuration missing: Supabase URL or API key is blank.")
     }
 }
