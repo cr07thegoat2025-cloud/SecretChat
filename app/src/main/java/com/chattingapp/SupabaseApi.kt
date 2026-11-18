@@ -32,12 +32,12 @@ class SupabaseApi(context: Context) {
     fun hasSession() = !accessToken.isNullOrBlank() && !userId.isNullOrBlank()
 
     @Synchronized
-    fun createAccount(emailInput: String, usernameInput: String, password: String): ChatSession {
+    fun createAccount(emailInput: String, password: String): ChatSession {
         requireConfig()
         val email = emailInput.trim().lowercase()
-        val name = usernameInput.trim().lowercase()
+        val baseName = email.substringBefore("@").lowercase().replace(Regex("[^a-z0-9_]"), "_").trim('_').take(12).ifBlank { "user" }
+        val name = baseName + "_" + java.util.UUID.randomUUID().toString().replace("-", "").take(6)
         if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) throw IOException("Enter a valid email address.")
-        if (!name.matches(Regex("^[a-z0-9_]{3,20}$"))) throw IOException("Username must be 3–20 letters, numbers or underscores.")
         if (password.length < 8) throw IOException("Password must be at least 8 characters.")
         val body = JSONObject().put("email", email).put("password", password)
             .put("data", JSONObject().put("username", name).put("display_name", name))
