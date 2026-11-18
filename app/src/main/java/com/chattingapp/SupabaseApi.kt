@@ -97,7 +97,8 @@ class SupabaseApi(context: Context) {
             extraHeaders = mapOf("Prefer" to "return=minimal"))
     }
 
-    private fun sessionFrom(json: JSONObject, name: String): ChatSession {
+    private fun sessionFrom(value: Any, name: String): ChatSession {
+        val json = value as? JSONObject ?: throw IOException("Supabase returned an invalid session response.")
         val access = json.optString("access_token")
         val refresh = json.optString("refresh_token")
         val user = json.optJSONObject("user")
