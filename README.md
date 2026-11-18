@@ -1,15 +1,12 @@
 # ChattingApp
 
-A native Android messaging app built with Kotlin and Jetpack Compose.
+Native Android messaging app built with Kotlin, Jetpack Compose and Supabase.
 
-## Status
+## Backend
+Supabase project: `https://sgzbbbrhoskipnvclskl.supabase.co`. The database migration is applied and creates profiles, friend requests, conversations, members, messages, RLS policies and a private attachment bucket.
 
-Initial project setup is being added. Backend: Supabase (Auth, Postgres, Realtime, Storage).
+## GitHub Actions variables
+In Settings → Secrets and variables → Actions → Variables, add `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. Use the Supabase publishable key, never a secret/service-role key.
 
-## Build
-
-Pushes to `main` trigger the Android GitHub Actions build. The debug APK is uploaded as a workflow artifact.
-
-## Configuration
-
-The Supabase project URL and publishable key are public client configuration. Configure them as GitHub Actions repository variables `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` before building a connected release. Never add a Supabase secret/service-role key to the app.
+## Username-only authentication
+The app maps usernames to internal addresses at `@chattingapp.invalid` for Supabase email/password auth; no real email or phone number is collected. Disable email confirmation in Supabase Auth settings for this password-only flow.
