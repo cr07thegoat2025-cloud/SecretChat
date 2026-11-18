@@ -12,8 +12,8 @@ android {
   targetSdk = 35
   versionCode = 1
   versionName = "0.1.0"
-  buildConfigField("String", "SUPABASE_URL", "\"" + (System.getenv("SUPABASE_URL") ?: "https://sgzbbbrhoskipnvclskl.supabase.co") + "\"")
-  buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"" + (System.getenv("SUPABASE_PUBLISHABLE_KEY") ?: "sb_publishable_Mzlu_uSXfnGzaWYI2dp1og_ha7RJV1W") + "\"")
+  buildConfigField("String", "SUPABASE_URL", "\"" + (System.getenv("SUPABASE_URL")?.takeIf { it.isNotBlank() } ?: "https://sgzbbbrhoskipnvclskl.supabase.co") + "\"")
+  buildConfigField("String", "SUPABASE_PUBLISHABLE_KEY", "\"" + (System.getenv("SUPABASE_PUBLISHABLE_KEY")?.takeIf { it.isNotBlank() } ?: "sb_publishable_Mzlu_uSXfnGzaWYI2dp1og_ha7RJV1W") + "\"")
  }
  buildFeatures { compose = true; buildConfig = true }
  compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
