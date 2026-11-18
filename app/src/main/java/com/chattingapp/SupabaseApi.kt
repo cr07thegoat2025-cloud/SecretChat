@@ -6,7 +6,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONArray
-import org.json.JSONObject\nimport org.json.JSONTokener
+import org.json.JSONObject
+import org.json.JSONTokener
 import java.io.IOException
 
 data class ChatSession(val accessToken: String, val refreshToken: String, val userId: String, val username: String)
