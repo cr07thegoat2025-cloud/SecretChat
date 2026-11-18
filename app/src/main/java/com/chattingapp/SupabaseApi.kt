@@ -73,8 +73,12 @@ class SupabaseApi(context: Context) {
     }
 
     fun startDirectChat(friendUsername: String): String {
-        val result = request("/rest/v1/rpc/start_direct_chat", JSONObject().put("friend_username", friendUsername.trim().lowercase())) as JSONObject
-        return result.optString("id").ifBlank { result.optString("conversation_id") }.ifBlank { result.toString().trim('"') }
+        val result = request("/rest/v1/rpc/start_direct_chat", JSONObject().put("friend_username", friendUsername.trim().lowercase()))
+        return when (result) {
+            is String -> result
+            is JSONObject -> result.optString("id").ifBlank { result.optString("conversation_id") }
+            else -> throw IOException("Supabase returned an unexpected conversation ID.")
+        }
     }
 
     fun messages(conversationId: String): List<ChatMessage> {
