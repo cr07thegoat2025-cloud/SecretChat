@@ -44,9 +44,9 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 private fun ChattingApp(api: SupabaseApi) {
-    var username by remember { mutableStateOf(api.username.orEmpty()) }
+    var email by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var creating by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     var signedIn by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf("") }
@@ -79,35 +79,33 @@ private fun ChattingApp(api: SupabaseApi) {
 
     if (!signedIn) {
         Box(Modifier.fillMaxSize().background(Night).padding(26.dp), contentAlignment = Alignment.Center) {
-            Column(verticalArrangement = Arrangement.spacedBy(15.dp)) {
+            Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                 Text("2E", color = Violet, fontSize = 44.sp, fontWeight = FontWeight.Black)
                 Text("ChattingApp", fontSize = 30.sp, fontWeight = FontWeight.Bold)
-                Text("Your people. Your conversations.", color = Soft)
-                Spacer(Modifier.height(10.dp))
-                OutlinedTextField(value = username, onValueChange = { username = it }, modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Username") }, singleLine = true)
+                Text("Create your account and start talking.", color = Soft)
+                Spacer(Modifier.height(8.dp))
+                OutlinedTextField(value = email, onValueChange = { email = it }, modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Email address") }, singleLine = true)
+                OutlinedTextField(value = username, onValueChange = { username = it.lowercase() }, modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Choose a username") }, singleLine = true)
                 OutlinedTextField(value = password, onValueChange = { password = it }, modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Password") }, visualTransformation = PasswordVisualTransformation(), singleLine = true)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilterChip(selected = !creating, onClick = { creating = false }, label = { Text("Log in") })
-                    FilterChip(selected = creating, onClick = { creating = true }, label = { Text("Create account") })
-                }
+                    label = { Text("Password (8+ characters)") }, visualTransformation = PasswordVisualTransformation(), singleLine = true)
                 if (error.isNotBlank()) Text(error, color = Color(0xFFFF7777), fontSize = 13.sp)
                 Button(onClick = {
                     scope.launch {
                         busy = true; error = ""
                         try {
-                            withContext(Dispatchers.IO) { api.authenticate(username, password, creating) }
-                            signedIn = true; password = ""; loadChats()
-                        } catch (e: Exception) { error = e.message ?: "Could not connect to Supabase." }
+                            withContext(Dispatchers.IO) { api.createAccount(email, username, password) }
+                            signedIn = true; password = ""; email = ""; loadChats()
+                        } catch (e: Exception) { error = e.message ?: "Could not create your account." }
                         finally { busy = false }
                     }
-                }, enabled = !busy && username.length >= 3 && password.length >= 8,
+                }, enabled = !busy && email.contains("@") && username.length >= 3 && password.length >= 8,
                     modifier = Modifier.fillMaxWidth().height(54.dp), shape = RoundedCornerShape(15.dp)) {
                     if (busy) CircularProgressIndicator(Modifier.size(20.dp), color = Color.White, strokeWidth = 2.dp)
-                    else Text(if (creating) "Create account" else "Continue", fontWeight = FontWeight.Bold)
+                    else Text("Create account", fontWeight = FontWeight.Bold)
                 }
-                Text("Username and password only. No phone number or real email.", color = Soft, fontSize = 12.sp)
+                Text("No email verification. Your email is used to create your account.", color = Soft, fontSize = 12.sp)
             }
         }
     } else if (selected != null) {
