@@ -152,9 +152,6 @@ private fun ChattingApp(api: SupabaseApi) {
                     Text("ChattingApp", fontSize = 28.sp, fontWeight = FontWeight.Bold)
                     Text("@${api.username.orEmpty()}", color = Soft)
                 }
-                TextButton(onClick = {
-                    scope.launch { withContext(Dispatchers.IO) { api.signOut() }; signedIn = false; chats = emptyList() }
-                }) { Text("Sign out") }
             }
             Spacer(Modifier.height(22.dp))
             Text("Start a conversation", fontWeight = FontWeight.SemiBold)
